@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script type="text/javascript">  
+    var wsUri ="ws://localhost:8080"; 
+    var output;  
+    var lastHeartBeat = new Date().getTime();
+    var overtime = 8000;
+  
+    function init() { 
+        output = document.getElementById("output"); 
+        testWebSocket();
+    //setInterval(checkConnect,5000);
+    }  
+  
+    function checkConnect() {
+        websocket.send("{'event':'ping'}"); 
+        if( (new Date().getTime()-lastHeartBeat)>overtime){
+           onsole.log("socket 连接断开，正在尝试重新建立连接");
+           //testWebSocket();
+        }
+    }
+    
+    function testWebSocket() { 
+        websocket = new WebSocket(wsUri); 
+        websocket.onopen = function(evt) { 
+            onOpen(evt) 
+        }; 
+        websocket.onclose = function(evt) {
+            onClose(evt) 
+        }; 
+        websocket.onmessage = function(evt) { 
+           onMessage(evt) 
+        }; 
+        websocket.onerror = function(evt) { 
+            onError(evt) 
+        }; 
+        
+    }  
+
+
+    function onOpen(evt) { 
+        writeToScreen("CONNECTED"); 
+    }  
+  
+    function onClose(evt) { 
+        writeToScreen("DISCONNECTED"); 
+    }  
+  
+    function onMessage(evt) {
+ document.getElementById('output').innerHTML = evt.data; 
+        //var myList = evt.data;    
+        //console.log(myList);
+    }  
+  
+  
+    function onError(evt) { 
+        writeToScreen('<span style="color: red;">ERROR:</span> '+ evt.data); 
+    }  
+  
+    function doSend(message) { 
+        writeToScreen("SENT: " + message);  
+        websocket.send(message); 
+    }  
+  
+    function writeToScreen(message) { 
+        var pre = document.createElement("p"); 
+        pre.style.wordWrap = "break-word"; 
+        pre.innerHTML = message; 
+         
+    }  
+  
+    window.addEventListener("load", init, false);  
+ 
+   
+</script>
+<body>
+
+<pre>
+<div id="output">Waiting for resp</div>
+</pre>
+</body>
+</html>
+
